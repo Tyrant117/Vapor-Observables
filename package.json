@@ -5,9 +5,7 @@
   "description": "Simple observable fields that trigger events when their values change.",
   "unity": "2021.3",
   "keywords": [
-    "Networking",
-    "Client_Server",
-    "UDP"
+    "Fields"
   ],
   "author": {
     "name": "Carbon Fiber Games LLC"
