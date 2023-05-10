@@ -1,6 +1,6 @@
 {
   "name": "com.carbonfibergames.vaporobservables",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Vapor Observables",
   "description": "Simple observable fields that trigger events when their values change.",
   "unity": "2021.3",
