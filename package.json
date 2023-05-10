@@ -1,0 +1,17 @@
+{
+  "name": "com.carbonfibergames.vaporobservables",
+  "version": "1.0.0",
+  "displayName": "Vapor Observables",
+  "description": "Simple observable fields that trigger events when their values change.",
+  "unity": "2021.3",
+  "keywords": [
+    "Networking",
+    "Client_Server",
+    "UDP"
+  ],
+  "author": {
+    "name": "Carbon Fiber Games LLC"
+  },
+  "hideInEditor": false,
+  "type": "library"
+}
