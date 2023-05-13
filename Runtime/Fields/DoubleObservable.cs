@@ -47,20 +47,24 @@ namespace VaporObservables
             _ => false,
         };
 
-        public void Set(double value)
+        public bool Set(double value)
         {
             if (InternalSet(value))
             {
                 Class?.MarkDirty(this);
+                return true;
             }
+            return false;
         }
 
-        public void Modify(double value, ObservableModifyType type)
+        public bool Modify(double value, ObservableModifyType type)
         {
             if (InternalModify(value, type))
             {
                 Class?.MarkDirty(this);
+                return true;
             }
+            return false
         }
         #endregion
 
