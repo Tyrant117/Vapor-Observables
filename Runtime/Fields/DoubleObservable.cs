@@ -64,7 +64,7 @@ namespace VaporObservables
                 Class?.MarkDirty(this);
                 return true;
             }
-            return false
+            return false;
         }
         #endregion
 
