@@ -10,6 +10,12 @@ namespace VaporObservables
         public float Value { get; protected set; }
         public event Action<FloatObservable, float> ValueChanged;
 
+        public FloatObservable(ObservableClass @class, int fieldID, bool saveValue, float value) : base(@class, fieldID, saveValue)
+        {
+            Type = ObservableFieldType.Single;
+            Value = value;
+        }
+
         public FloatObservable(int fieldID, bool saveValue, float value) : base(fieldID, saveValue)
         {
             Type = ObservableFieldType.Single;
@@ -41,21 +47,27 @@ namespace VaporObservables
             _ => false,
         };
 
-        public bool Set(float value)
+        public void Set(float value)
         {
-            return InternalSet(value);
+            if (InternalSet(value))
+            {
+                Class?.MarkDirty(this);
+            }
         }
 
-        public bool Modify(float value, ObservableModifyType type)
+        public void Modify(float value, ObservableModifyType type)
         {
-            return InternalModify(value, type);
+            if (InternalModify(value, type))
+            {
+                Class?.MarkDirty(this);
+            }
         }
         #endregion
 
         #region - Saving -
-        public override SavedObservable Save()
+        public override SavedObservableField Save()
         {
-            return new SavedObservable(FieldID, Type, Value.ToString());
+            return new SavedObservableField(FieldID, Type, Value.ToString());
         }
         #endregion
 

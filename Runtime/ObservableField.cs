@@ -5,13 +5,13 @@ using UnityEngine;
 namespace VaporObservables
 {
     [Serializable]
-    public struct SavedObservable
+    public struct SavedObservableField
     {
         public int ID;
         public ObservableFieldType Type;
         public string Value;
 
-        public SavedObservable(int id, ObservableFieldType type, string value)
+        public SavedObservableField(int id, ObservableFieldType type, string value)
         {
             ID = id;
             Type = type;
@@ -21,9 +21,17 @@ namespace VaporObservables
 
     public abstract class ObservableField
     {
+        public ObservableClass Class { get; }
         public int FieldID { get; }
         public bool SaveValue { get; }
         public ObservableFieldType Type { get; protected set; }
+
+        public ObservableField(ObservableClass @class, int fieldID, bool saveValue)
+        {
+            Class = @class;
+            FieldID = fieldID;
+            SaveValue = saveValue;
+        }
 
         public ObservableField(int fieldID, bool saveValue)
         {
@@ -32,9 +40,9 @@ namespace VaporObservables
         }
 
         #region - Saving & Loading -
-        public abstract SavedObservable Save();
+        public abstract SavedObservableField Save();
 
-        public static ObservableField Load(SavedObservable save)
+        public static ObservableField Load(SavedObservableField save)
         {
             var field = _AddFieldByType(save.ID, save.Type, true);
             _SetFromString(field, save.Value);

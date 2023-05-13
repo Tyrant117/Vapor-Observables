@@ -11,6 +11,12 @@ namespace VaporObservables
         public Vector3 Value { get; protected set; }
         public event Action<Vector3Observable, Vector3> ValueChanged;
 
+        public Vector3Observable(ObservableClass @class, int fieldID, bool saveValue, Vector3 value) : base(@class, fieldID, saveValue)
+        {
+            Type = ObservableFieldType.Vector3;
+            Value = value;
+        }
+
         public Vector3Observable(int fieldID, bool saveValue, Vector3 value) : base(fieldID, saveValue)
         {
             Type = ObservableFieldType.Vector3;
@@ -47,26 +53,35 @@ namespace VaporObservables
             static Vector3 _Multiply(Vector3 lhs, Vector3 rhs) => new(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z);
         }
 
-        public bool Set(Vector3 value)
+        public void Set(Vector3 value)
         {
-            return InternalSet(value);
+            if (InternalSet(value))
+            {
+                Class?.MarkDirty(this);
+            }
         }
 
-        public bool Modify(float multiplier)
+        public void Modify(float multiplier)
         {
-            return InternalSet(Value * multiplier);
+            if (InternalSet(Value * multiplier))
+            {
+                Class?.MarkDirty(this);
+            }
         }
 
-        public bool Modify(Vector3 value, ObservableModifyType type)
+        public void Modify(Vector3 value, ObservableModifyType type)
         {
-            return InternalModify(value, type);
+            if (InternalModify(value, type))
+            {
+                Class?.MarkDirty(this);
+            }
         }
         #endregion
 
         #region - Saving -
-        public override SavedObservable Save()
+        public override SavedObservableField Save()
         {
-            return new SavedObservable(FieldID, Type, $"{Value.x},{Value.y},{Value.z}");
+            return new SavedObservableField(FieldID, Type, $"{Value.x},{Value.y},{Value.z}");
         }
 
         public override ObservableField Clone()

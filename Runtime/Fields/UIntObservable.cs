@@ -12,6 +12,12 @@ namespace VaporObservables
         public uint Value { get; protected set; }
         public event Action<UIntObservable> ValueChanged;
 
+        public UIntObservable(ObservableClass @class, int fieldID, bool saveValue, uint value) : base(@class, fieldID, saveValue)
+        {
+            Type = ObservableFieldType.UInt32;
+            Value = value;
+        }
+
         public UIntObservable(int fieldID, bool saveValue, uint value) : base(fieldID, saveValue)
         {
             Type = ObservableFieldType.UInt32;
@@ -33,16 +39,19 @@ namespace VaporObservables
             }
         }
 
-        public bool Set(uint value)
+        public void Set(uint value)
         {
-            return InternalSet(value);
+            if (InternalSet(value))
+            {
+                Class?.MarkDirty(this);
+            }
         }
         #endregion
 
         #region - Saving -
-        public override SavedObservable Save()
+        public override SavedObservableField Save()
         {
-            return new SavedObservable(FieldID, Type, Value.ToString());
+            return new SavedObservableField(FieldID, Type, Value.ToString());
         }
 
         public override ObservableField Clone()

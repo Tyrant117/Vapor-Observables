@@ -9,6 +9,12 @@ namespace VaporObservables
         public Vector2Int Value { get; protected set; }
         public event Action<Vector2IntObservable, Vector2Int> ValueChanged;
 
+        public Vector2IntObservable(ObservableClass @class, int fieldID, bool saveValue, Vector2Int value) : base(@class, fieldID, saveValue)
+        {
+            Type = ObservableFieldType.Vector2Int;
+            Value = value;
+        }
+
         public Vector2IntObservable(int fieldID, bool saveValue, Vector2Int value) : base(fieldID, saveValue)
         {
             Type = ObservableFieldType.Vector2Int;
@@ -40,26 +46,35 @@ namespace VaporObservables
             _ => false,
         };
 
-        public bool Set(Vector2Int value)
+        public void Set(Vector2Int value)
         {
-            return InternalSet(value);
+            if (InternalSet(value))
+            {
+                Class?.MarkDirty(this);
+            }
         }
 
-        public bool Modify(int multiplier)
+        public void Modify(int multiplier)
         {
-            return InternalSet(Value * multiplier);
+            if (InternalSet(Value * multiplier))
+            {
+                Class?.MarkDirty(this);
+            }
         }
 
-        public bool Modify(Vector2Int value, ObservableModifyType type)
+        public void Modify(Vector2Int value, ObservableModifyType type)
         {
-            return InternalModify(value, type);
+            if (InternalModify(value, type))
+            {
+                Class?.MarkDirty(this);
+            }
         }
         #endregion
 
         #region - Saving -
-        public override SavedObservable Save()
+        public override SavedObservableField Save()
         {
-            return new SavedObservable(FieldID, Type, $"{Value.x},{Value.y}");
+            return new SavedObservableField(FieldID, Type, $"{Value.x},{Value.y}");
         }
 
         public override ObservableField Clone()

@@ -18,7 +18,6 @@ namespace VaporObservables
         Color,
         Quaternion,
         String,
-        Dynamic,
     }
 
     public enum ObservableModifyType

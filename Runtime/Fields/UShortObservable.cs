@@ -9,6 +9,12 @@ namespace VaporObservables
         public ushort Value { get; protected set; }
         public event Action<UShortObservable> ValueChanged;
 
+        public UShortObservable(ObservableClass @class, int fieldID, bool saveValue, ushort value) : base(@class, fieldID, saveValue)
+        {
+            Type = ObservableFieldType.UInt16;
+            Value = value;
+        }
+
         public UShortObservable(int fieldID, bool saveValue, ushort value) : base(fieldID, saveValue)
         {
             Type = ObservableFieldType.UInt16;
@@ -30,16 +36,19 @@ namespace VaporObservables
             }
         }
 
-        public bool Set(ushort value)
+        public void Set(ushort value)
         {
-            return InternalSet(value);
+            if (InternalSet(value))
+            {
+                Class?.MarkDirty(this);
+            }
         }
         #endregion
 
         #region - Saving -
-        public override SavedObservable Save()
+        public override SavedObservableField Save()
         {
-            return new SavedObservable(FieldID, Type, Value.ToString());
+            return new SavedObservableField(FieldID, Type, Value.ToString());
         }
 
         public override ObservableField Clone()

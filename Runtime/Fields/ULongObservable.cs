@@ -10,6 +10,12 @@ namespace VaporObservables
         public ulong Value { get; protected set; }
         public event Action<ULongObservable> ValueChanged;
 
+        public ULongObservable(ObservableClass @class, int fieldID, bool saveValue, ulong value) : base(@class, fieldID, saveValue)
+        {
+            Type = ObservableFieldType.UInt64;
+            Value = value;
+        }
+
         public ULongObservable(int fieldID, bool saveValue, ulong value) : base(fieldID, saveValue)
         {
             Type = ObservableFieldType.UInt64;
@@ -31,16 +37,19 @@ namespace VaporObservables
             }
         }
 
-        public bool Set(ulong value)
+        public void Set(ulong value)
         {
-            return InternalSet(value);
+            if (InternalSet(value))
+            {
+                Class?.MarkDirty(this);
+            }
         }
         #endregion
 
         #region - Saving -
-        public override SavedObservable Save()
+        public override SavedObservableField Save()
         {
-            return new SavedObservable(FieldID, Type, Value.ToString());
+            return new SavedObservableField(FieldID, Type, Value.ToString());
         }
 
         public override ObservableField Clone()

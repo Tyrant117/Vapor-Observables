@@ -10,6 +10,12 @@ namespace VaporObservables
         public long Value { get; protected set; }
         public event Action<LongObservable, long> ValueChanged;
 
+        public LongObservable(ObservableClass @class, int fieldID, bool saveValue, long value) : base(@class, fieldID, saveValue)
+        {
+            Type = ObservableFieldType.Int64;
+            Value = value;
+        }
+
         public LongObservable(int fieldID, bool saveValue, long value) : base(fieldID, saveValue)
         {
             Type = ObservableFieldType.Int64;
@@ -44,21 +50,27 @@ namespace VaporObservables
             };
         }
 
-        public bool Set(long value)
+        public void Set(long value)
         {
-            return InternalSet(value);
+            if (InternalSet(value))
+            {
+                Class?.MarkDirty(this);
+            }
         }
 
-        public bool Modify(long value, ObservableModifyType type)
+        public void Modify(long value, ObservableModifyType type)
         {
-            return InternalModify(value, type);
+            if (InternalModify(value, type))
+            {
+                Class?.MarkDirty(this);
+            }
         }
         #endregion
 
         #region - Saving -
-        public override SavedObservable Save()
+        public override SavedObservableField Save()
         {
-            return new SavedObservable(FieldID, Type, Value.ToString());
+            return new SavedObservableField(FieldID, Type, Value.ToString());
         }
 
         public override ObservableField Clone()

@@ -10,6 +10,12 @@ namespace VaporObservables
         public Quaternion Value { get; protected set; }
         public event Action<QuaternionObservable, float> ValueChanged;
 
+        public QuaternionObservable(ObservableClass @class, int fieldID, bool saveValue, Quaternion value) : base(@class, fieldID, saveValue)
+        {
+            Type = ObservableFieldType.Quaternion;
+            Value = value;
+        }
+
         public QuaternionObservable(int fieldID, bool saveValue, Quaternion value) : base(fieldID, saveValue)
         {
             Type = ObservableFieldType.Quaternion;
@@ -32,16 +38,19 @@ namespace VaporObservables
             }
         }
 
-        public bool Set(Quaternion value)
+        public void Set(Quaternion value)
         {
-            return InternalSet(value);
+            if (InternalSet(value))
+            {
+                Class?.MarkDirty(this);
+            }
         }
         #endregion
 
         #region - Saving -
-        public override SavedObservable Save()
+        public override SavedObservableField Save()
         {
-            return new SavedObservable(FieldID, Type, $"{Value.x},{Value.y},{Value.z},{Value.w}");
+            return new SavedObservableField(FieldID, Type, $"{Value.x},{Value.y},{Value.z},{Value.w}");
         }
 
         public override ObservableField Clone()

@@ -10,6 +10,12 @@ namespace VaporObservables
         public Color Value { get; protected set; }
         public event Action<ColorObservable> ValueChanged;
 
+        public ColorObservable(ObservableClass @class, int fieldID, bool saveValue, Color value) : base(@class, fieldID, saveValue)
+        {
+            Type = ObservableFieldType.Color;
+            Value = value;
+        }
+
         public ColorObservable(int fieldID, bool saveValue, Color value) : base(fieldID, saveValue)
         {
             Type = ObservableFieldType.Color;
@@ -31,16 +37,19 @@ namespace VaporObservables
             }
         }
 
-        public bool Set(Color value)
+        public void Set(Color value)
         {
-            return InternalSet(value);
+            if (InternalSet(value))
+            {
+                Class?.MarkDirty(this);
+            }
         }
         #endregion
 
         #region - Saving -
-        public override SavedObservable Save()
+        public override SavedObservableField Save()
         {
-            return new SavedObservable(FieldID, Type, $"{Value.r},{Value.g},{Value.b},{Value.a}");
+            return new SavedObservableField(FieldID, Type, $"{Value.r},{Value.g},{Value.b},{Value.a}");
         }
 
         public override ObservableField Clone()

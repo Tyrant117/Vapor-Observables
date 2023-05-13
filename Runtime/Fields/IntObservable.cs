@@ -11,6 +11,11 @@ namespace VaporObservables
         public bool HasFlag(int flagToCheck) => (Value & flagToCheck) != 0;
         public event Action<IntObservable, int> ValueChanged; // Value and Delta
 
+        public IntObservable(ObservableClass @class, int fieldID, bool saveValue, int value) : base(@class, fieldID, saveValue)
+        {
+            Type = ObservableFieldType.Int32;
+            Value = value;
+        }
 
         public IntObservable(int fieldID, bool saveValue, int value) : base(fieldID, saveValue)
         {
@@ -43,21 +48,27 @@ namespace VaporObservables
             _ => false,
         };
 
-        public bool Set(int value)
+        public void Set(int value)
         {
-            return InternalSet(value);
+            if (InternalSet(value))
+            {
+                Class?.MarkDirty(this);
+            }
         }
 
-        public bool Modify(int value, ObservableModifyType type)
+        public void Modify(int value, ObservableModifyType type)
         {
-            return InternalModify(value, type);
+            if (InternalModify(value, type))
+            {
+                Class?.MarkDirty(this);
+            }
         }
         #endregion
 
         #region - Saving -
-        public override SavedObservable Save()
+        public override SavedObservableField Save()
         {
-            return new SavedObservable(FieldID, Type, Value.ToString());
+            return new SavedObservableField(FieldID, Type, Value.ToString());
         }
         #endregion
 

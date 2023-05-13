@@ -11,6 +11,12 @@ namespace VaporObservables
         public bool Bool => Value != 0;
         public event Action<ByteObservable, byte> ValueChanged; // Value and Delta
 
+        public ByteObservable(ObservableClass @class, int fieldID, bool saveValue, byte value) : base(@class, fieldID, saveValue)
+        {
+            Type = ObservableFieldType.Int8;
+            Value = value;
+        }
+
         public ByteObservable(int fieldID, bool saveValue, byte value) : base(fieldID, saveValue)
         {
             Type = ObservableFieldType.Int8;
@@ -42,21 +48,27 @@ namespace VaporObservables
             _ => false,
         };
 
-        public bool Set(byte value)
+        public void Set(byte value)
         {
-            return InternalSet(value);
+            if (InternalSet(value))
+            {
+                Class?.MarkDirty(this);
+            }
         }
 
-        public bool Modify(byte value, ObservableModifyType type)
+        public void Modify(byte value, ObservableModifyType type)
         {
-            return InternalModify(value, type);
+            if(InternalModify(value, type))
+            {
+                Class?.MarkDirty(this);
+            }
         }
         #endregion
 
         #region - Saving -
-        public override SavedObservable Save()
+        public override SavedObservableField Save()
         {
-            return new SavedObservable(FieldID, Type, Value.ToString());
+            return new SavedObservableField(FieldID, Type, Value.ToString());
         }
         #endregion
 

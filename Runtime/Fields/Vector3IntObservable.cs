@@ -11,6 +11,12 @@ namespace VaporObservables
         public Vector3Int Value { get; protected set; }
         public event Action<Vector3IntObservable, Vector3Int> ValueChanged;
 
+        public Vector3IntObservable(ObservableClass @class, int fieldID, bool saveValue, Vector3Int value) : base(@class, fieldID, saveValue)
+        {
+            Type = ObservableFieldType.Vector3Int;
+            Value = value;
+        }
+
         public Vector3IntObservable(int fieldID, bool saveValue, Vector3Int value) : base(fieldID, saveValue)
         {
             Type = ObservableFieldType.Vector3Int;
@@ -42,26 +48,35 @@ namespace VaporObservables
             _ => false,
         };
 
-        public bool Set(Vector3Int value)
+        public void Set(Vector3Int value)
         {
-            return InternalSet(value);
+            if (InternalSet(value))
+            {
+                Class?.MarkDirty(this);
+            }
         }
 
-        public bool Modify(int value)
+        public void Modify(int multiplier)
         {
-            return InternalSet(Value * value);
+            if (InternalSet(Value * multiplier))
+            {
+                Class?.MarkDirty(this);
+            }
         }
 
-        public bool Modify(Vector3Int value, ObservableModifyType type)
+        public void Modify(Vector3Int value, ObservableModifyType type)
         {
-            return InternalModify(value, type);
+            if (InternalModify(value, type))
+            {
+                Class?.MarkDirty(this);
+            }
         }
         #endregion
 
-        #region - Saving -
-        public override SavedObservable Save()
+            #region - Saving -
+        public override SavedObservableField Save()
         {
-            return new SavedObservable(FieldID, Type, string.Format("{0},{1},{2}", Value.x, Value.y, Value.z));
+            return new SavedObservableField(FieldID, Type, string.Format("{0},{1},{2}", Value.x, Value.y, Value.z));
         }
         #endregion
 

@@ -13,6 +13,12 @@ namespace VaporObservables
         /// </summary>
         public event Action<StringObservable, string, string> ValueChanged;
 
+        public StringObservable(ObservableClass @class, int fieldID, bool saveValue, string value) : base(@class, fieldID, saveValue)
+        {
+            Type = ObservableFieldType.String;
+            Value = value;
+        }
+
         public StringObservable(int fieldID, bool saveValue, string value) : base(fieldID, saveValue)
         {
             Type = ObservableFieldType.String;
@@ -35,16 +41,19 @@ namespace VaporObservables
             }
         }
 
-        public bool Set(string value)
+        public void Set(string value)
         {
-            return InternalSet(value);
+            if (InternalSet(value))
+            {
+                Class?.MarkDirty(this);
+            }
         }
         #endregion
 
         #region - Saving -
-        public override SavedObservable Save()
+        public override SavedObservableField Save()
         {
-            return new SavedObservable(FieldID, Type, Value.ToString());
+            return new SavedObservableField(FieldID, Type, Value.ToString());
         }
         #endregion
 

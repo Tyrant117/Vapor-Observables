@@ -10,6 +10,12 @@ namespace VaporObservables
         public double Value { get; protected set; }
         public event Action<DoubleObservable, double> ValueChanged;
 
+        public DoubleObservable(ObservableClass @class, int fieldID, bool saveValue, double value) : base(@class, fieldID, saveValue)
+        {
+            Type = ObservableFieldType.Double;
+            Value = value;
+        }
+
         public DoubleObservable(int fieldID, bool saveValue, double value) : base(fieldID, saveValue)
         {
             Type = ObservableFieldType.Double;
@@ -41,21 +47,27 @@ namespace VaporObservables
             _ => false,
         };
 
-        public bool Set(double value)
+        public void Set(double value)
         {
-            return InternalSet(value);
+            if (InternalSet(value))
+            {
+                Class?.MarkDirty(this);
+            }
         }
 
-        public bool Modify(double value, ObservableModifyType type)
+        public void Modify(double value, ObservableModifyType type)
         {
-            return InternalModify(value, type);
+            if (InternalModify(value, type))
+            {
+                Class?.MarkDirty(this);
+            }
         }
         #endregion
 
         #region - Saving -
-        public override SavedObservable Save()
+        public override SavedObservableField Save()
         {
-            return new SavedObservable(FieldID, Type, Value.ToString());
+            return new SavedObservableField(FieldID, Type, Value.ToString());
         }
         #endregion
 
