@@ -150,17 +150,20 @@ namespace VaporObservables
         {
             if (_isLoaded && !forceReload) { return; }
 
-            foreach (var field in save.SavedFields)
+            if(save.SavedFields != null)
             {
-                if (fields.ContainsKey(field.ID))
+                foreach (var field in save.SavedFields)
                 {
-                    SetFromString(field.ID, field.Value);
-                }
-                else
-                {
-                    if (!createMissingFields) { continue; }
-                    AddField(field.ID, field.Type, true);
-                    SetFromString(field.ID, field.Value);
+                    if (fields.ContainsKey(field.ID))
+                    {
+                        SetFromString(field.ID, field.Value);
+                    }
+                    else
+                    {
+                        if (!createMissingFields) { continue; }
+                        AddField(field.ID, field.Type, true);
+                        SetFromString(field.ID, field.Value);
+                    }
                 }
             }
             _isLoaded = true;
