@@ -22,18 +22,15 @@ namespace VaporObservables
 
     public abstract class ObservableClass
     {
-        public bool Dirty => dirtyFields.Count > 0;
         public int Type { get; protected set; }
         public int ID { get; protected set; }
-        public ObservableField GetField(int fieldID) => fields[fieldID];
-        public T GetField<T>(int fieldID) where T : ObservableField => (T)fields[fieldID];
+        public ObservableField GetField(int fieldID) => _fields[fieldID];
+        public T GetField<T>(int fieldID) where T : ObservableField => (T)_fields[fieldID];
 
-        protected Dictionary<int, ObservableField> fields = new();
-        protected HashSet<int> dirtyFields = new();
+        protected Dictionary<int, ObservableField> _fields = new();
         protected bool _isLoaded;
 
         public event Action<ObservableClass> Dirtied;
-        public event Action<ObservableClass> Changed;
 
         public ObservableClass(int unqiueID)
         {
@@ -54,8 +51,8 @@ namespace VaporObservables
             ObservableField field = value == null ? AddFieldByType(fieldID, type, saveValue) : AddFieldByType(fieldID, type, saveValue, value);
             if (field != null)
             {
-                fields[fieldID] = field;
-                MarkDirty(fields[fieldID]);
+                _fields[fieldID] = field;
+                MarkDirty(_fields[fieldID]);
             }
             else
             {
@@ -65,7 +62,7 @@ namespace VaporObservables
 
         public void AddField(ObservableField field)
         {
-            fields[field.FieldID] = field;
+            _fields[field.FieldID] = field;
             MarkDirty(field);
         }
 
@@ -120,15 +117,7 @@ namespace VaporObservables
 
         internal virtual void MarkDirty(ObservableField field)
         {
-            if (dirtyFields.Add(field.FieldID))
-            {
-                //Debug.Log($"Class {Type} {ID} Dirty");
-                Dirtied?.Invoke(this);
-            }
-            else
-            {
-                Debug.Log($"Class {Type} {ID} Already Dirty");
-            }
+            Dirtied?.Invoke(this);
         }
         #endregion
 
@@ -136,7 +125,7 @@ namespace VaporObservables
         public SavedObservableClass Save()
         {
             List<SavedObservableField> holder = new();
-            foreach (var field in fields.Values)
+            foreach (var field in _fields.Values)
             {
                 if (field.SaveValue)
                 {
@@ -154,7 +143,7 @@ namespace VaporObservables
             {
                 foreach (var field in save.SavedFields)
                 {
-                    if (fields.ContainsKey(field.ID))
+                    if (_fields.ContainsKey(field.ID))
                     {
                         SetFromString(field.ID, field.Value);
                     }
@@ -172,9 +161,9 @@ namespace VaporObservables
         protected void SetFromString(int fieldID, string value)
         {
             if (value is null or "") { return; }
-            if (!fields.ContainsKey(fieldID)) { return; }
+            if (!_fields.ContainsKey(fieldID)) { return; }
 
-            switch (fields[fieldID].Type)
+            switch (_fields[fieldID].Type)
             {
                 case ObservableFieldType.Int8:
                     GetField<ByteObservable>(fieldID).Set(byte.Parse(value));
