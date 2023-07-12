@@ -46,6 +46,11 @@ namespace VaporObservables
             _ => false,
         };
 
+        public void SetWithoutNotify(Vector2Int value)
+        {
+            Value = value;
+        }
+
         public void Set(Vector2Int value)
         {
             if (InternalSet(value))

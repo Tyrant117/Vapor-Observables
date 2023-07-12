@@ -53,6 +53,11 @@ namespace VaporObservables
             static Vector3 _Multiply(Vector3 lhs, Vector3 rhs) => new(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z);
         }
 
+        public void SetWithoutNotify(Vector3 value)
+        {
+            Value = value;
+        }
+
         public void Set(Vector3 value)
         {
             if (InternalSet(value))

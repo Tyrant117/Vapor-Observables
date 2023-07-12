@@ -37,6 +37,11 @@ namespace VaporObservables
             }
         }
 
+        public void SetWithoutNotify(ulong value)
+        {
+            Value = value;
+        }
+
         public void Set(ulong value)
         {
             if (InternalSet(value))

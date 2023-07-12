@@ -48,6 +48,11 @@ namespace VaporObservables
             _ => false,
         };
 
+        public void SetWithoutNotify(byte value)
+        {
+            Value = value;
+        }
+
         public void Set(byte value)
         {
             if (InternalSet(value))

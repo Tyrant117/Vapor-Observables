@@ -36,6 +36,11 @@ namespace VaporObservables
             }
         }
 
+        public void SetWithoutNotify(ushort value)
+        {
+            Value = value;
+        }
+
         public void Set(ushort value)
         {
             if (InternalSet(value))

@@ -38,6 +38,11 @@ namespace VaporObservables
             }
         }
 
+        public void SetWithoutNotify(Quaternion value)
+        {
+            Value = value;
+        }
+
         public void Set(Quaternion value)
         {
             if (InternalSet(value))
